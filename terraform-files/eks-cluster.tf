@@ -3,7 +3,6 @@
 resource "aws_eks_cluster" "eks-cluster" {
   name     = "eks-cluster-portfolio"
   role_arn = aws_iam_role.eks-cluster-role.arn
-  # cluster_endpoint_public_access = true
 
   vpc_config {
     security_group_ids = [aws_security_group.eks-security-group.id]
@@ -26,9 +25,9 @@ resource "aws_eks_node_group" "eks-node-group" {
   subnet_ids      = [aws_subnet.pub-sub1.id, aws_subnet.pub-sub2.id, aws_subnet.pub-sub3.id, aws_subnet.priv-sub1.id, aws_subnet.priv-sub2.id, aws_subnet.priv-sub3.id]
 
   scaling_config {
-    desired_size = 1
-    max_size     = 2
-    min_size     = 1
+    desired_size = 4
+    max_size     = 6
+    min_size     = 2
   }
 
   depends_on = [
@@ -38,10 +37,10 @@ resource "aws_eks_node_group" "eks-node-group" {
   ]
 }
 
-# output "endpoint" {
-#   value = aws_eks_cluster.example.endpoint
-# }
+output "endpoint" {
+  value = aws_eks_cluster.eks-cluster.endpoint
+}
 
-# output "kubeconfig-certificate-authority-data" {
-#   value = aws_eks_cluster.example.certificate_authority[0].data
-# }
+output "kubeconfig-certificate-authority-data" {
+  value = aws_eks_cluster.eks-cluster.certificate_authority[0].data
+}
