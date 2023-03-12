@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "kube-namespace" {
   }
 }
 
-# Create kubernetes deployment
+# Create kubernetes deployment for portfolio
 
 resource "kubernetes_deployment" "kube-deployment" {
   metadata {
@@ -21,7 +21,7 @@ resource "kubernetes_deployment" "kube-deployment" {
   }
 
   spec {
-    replicas = 2
+    replicas = 1
     selector {
       match_labels = {
         app = var.application-name
@@ -62,6 +62,28 @@ resource "kubernetes_service" "kube-service" {
   }
 }
 
-output "load_balancer_hostname" {
+# Create kubernetes Name space for socks shop app
+
+resource "kubernetes_namespace" "kube-namespace-socks" {
+  metadata {
+    name = "sock-shop"
+  }
+}
+
+# Create kubectl deployment for socks app
+
+data "kubectl_file_documents" "docs" {
+    content = file("complete-demo.yaml")
+}
+
+resource "kubectl_manifest" "kube-deployment-socks-app" {
+    for_each  = data.kubectl_file_documents.docs.manifests
+    yaml_body = each.value
+}
+
+# Print out loadbalancer DNS hostname for portfolio deployment
+
+output "portfolio_load_balancer_hostname" {
   value = kubernetes_service.kube-service.status.0.load_balancer.0.ingress.0.hostname
 }
+
