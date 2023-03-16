@@ -11,7 +11,7 @@ aliases:
 jobs:
   build_docker_image:
     docker:
-      - image: circleci/nginx
+      - image: circleci/nginx:0.3
     steps:
       - checkout
       - setup_remote_docker:
