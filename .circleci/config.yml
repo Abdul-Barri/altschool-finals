@@ -1,26 +1,44 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+aliases:
+  - &install-aws-cli
+    run:
+      name: Installing AWS CLI
+      working_directory: /
+      command: |
+        sudo apt-get -y -qq update
+        sudo apt-get -y install awscli
+        sudo apt-get install -y python-pip python-dev build-essential
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  build_docker_image:
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - image: nginx:alpine
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Build Docker image
+          command: |
+            export TAG=0.2.<< pipeline.number >>
+            export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            
+            cd portfolio-webapp
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $DOCKER_LOGIN/$IMAGE_NAME
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  say-hello-workflow:
-    jobs:
-      - say-hello
+  create_infrastructure:
+    docker:
+      - image: cimg/terraform:1.0.6
+    steps:
+      - checkout
+      - *install-aws-cli
+      - run:
+          name: Create infrastructure on AWS
+          command: |
+            echo $TF_CLOUD_TOKEN | base64 -d > $HOME/.terraformrc
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/infrastructure/
+            terraform init
+            terraform plan
+            terraform apply

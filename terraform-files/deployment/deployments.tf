@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "kube-namespace-portfolio" {
   metadata {
     name = "portfolio-namespace"
     labels = {
-      app = var.application-name
+      app = "portfolio"
     }
   }
 }
@@ -15,10 +15,10 @@ resource "kubernetes_namespace" "kube-namespace-portfolio" {
 
 resource "kubernetes_deployment" "kube-deployment-portfolio" {
   metadata {
-    name      = var.application-name
+    name      = "portfolio"
     namespace = kubernetes_namespace.kube-namespace-portfolio.id
     labels = {
-      app = var.application-name
+      app = "portfolio"
     } 
   }
 
@@ -26,19 +26,19 @@ resource "kubernetes_deployment" "kube-deployment-portfolio" {
     replicas = 1
     selector {
       match_labels = {
-        app = var.application-name
+        app = "portfolio"
       }
     }
     template {
       metadata {
         labels = {
-          app = var.application-name
+          app = "portfolio"
         }
       }
       spec {
         container {
-          image = var.image
-          name  = var.application-name
+          image = "abdulbarri/portfolio:1.0"
+          name  = "portfolio"
         }
       }
     }
@@ -49,12 +49,12 @@ resource "kubernetes_deployment" "kube-deployment-portfolio" {
 
 resource "kubernetes_service" "kube-service-portfolio" {
   metadata {
-    name      = var.application-name
+    name      = "portfolio"
     namespace = kubernetes_namespace.kube-namespace-portfolio.id
   }
   spec {
     selector = {
-      app = var.application-name
+      app = "portfolio"
     }
     port {
       port        = 80

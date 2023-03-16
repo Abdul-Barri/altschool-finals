@@ -1,7 +1,7 @@
 # Create VPC
 
 resource "aws_vpc" "vpc" {
-  cidr_block           = var.vpc-cidr
+  cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support = true
   tags = {
@@ -68,7 +68,7 @@ resource "aws_route_table" "pub-rt" {
   vpc_id = aws_vpc.vpc.id
 
   route {
-    cidr_block = var.route-cidr
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
 
@@ -83,7 +83,7 @@ resource "aws_route_table" "priv-rt1" {
   vpc_id = aws_vpc.vpc.id
 
   route {
-    cidr_block     = var.route-cidr
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat-gatw1.id
   }
 
@@ -98,7 +98,7 @@ resource "aws_route_table" "priv-rt2" {
   vpc_id = aws_vpc.vpc.id
 
   route {
-    cidr_block     = var.route-cidr
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat-gatw2.id
   }
 
@@ -139,9 +139,9 @@ resource "aws_route_table_association" "priv-sub2-association" {
 
 resource "aws_subnet" "pub-sub1" {
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = var.pub-sub1-cidr
+  cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = var.az1
+  availability_zone       = "us-east-1a"
   tags = {
     Name = "eks-pub-sub1"
   }
@@ -151,9 +151,9 @@ resource "aws_subnet" "pub-sub1" {
 
 resource "aws_subnet" "pub-sub2" {
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = var.pub-sub2-cidr
+  cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = var.az2
+  availability_zone       = "us-east-1b"
   tags = {
     Name = "eks-pub-sub2"
   }
@@ -163,8 +163,8 @@ resource "aws_subnet" "pub-sub2" {
 
 resource "aws_subnet" "priv-sub1" {
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = var.priv-sub1-cidr
-  availability_zone       = var.az1
+  cidr_block              = "10.0.4.0/24"
+  availability_zone       = "us-east-1a"
   map_public_ip_on_launch = false
   tags = {
     Name = "eks-priv-sub1"
@@ -175,8 +175,8 @@ resource "aws_subnet" "priv-sub1" {
 
 resource "aws_subnet" "priv-sub2" {
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = var.priv-sub2-cidr
-  availability_zone       = var.az2
+  cidr_block              = "10.0.5.0/24"
+  availability_zone       = "us-east-1b"
   map_public_ip_on_launch = false
   tags = {
     Name = "eks-priv-sub2"
