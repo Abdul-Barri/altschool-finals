@@ -28,10 +28,10 @@ jobs:
 
   create_infrastructure:
     docker:
-      - image: hashicorp/terraform:latest
+      - image: cimg/base:2022.06
     steps:
       - checkout
-      - *install-aws-cli
+      # - *install-aws-cli
       - run:
           name: Create infrastructure on AWS
           command: |
