@@ -63,7 +63,7 @@ jobs:
             cd terraform-files/deployment/
             terraform init
             terraform plan -var $DOCKER_IMAGE -out=plan.txt
-            terraform apply plan.txt --auto-approve
+            terraform apply plan.txt
 
 workflows:
   deployment:
