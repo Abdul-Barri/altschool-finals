@@ -42,3 +42,22 @@ jobs:
             terraform init
             terraform plan
             terraform apply
+
+workflows:
+  deployment:
+    jobs:
+      - build_docker_image
+      # - create_infrastructure
+      # - gke_deploy_app:
+      #     requires:
+      #       - run_tests
+      #       - build_docker_image
+      #       - gke_create_cluster
+      # - approve-destroy:
+      #     type: approval
+      #     requires:
+      #       - gke_create_cluster
+      #       - gke_deploy_app
+      # - gke_destroy_cluster:
+      #     requires:
+      #       - approve-destroy
