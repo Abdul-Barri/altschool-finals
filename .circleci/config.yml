@@ -50,8 +50,13 @@ workflows:
   deployment:
     jobs:
       - build_docker_image
-      - create_backend_state_store
-      - create_infrastructure
+      - create_backend_state_store:
+          requires: [build_docker_image]
+          filters:
+            branches:
+              only: [create-backend]
+      - create_infrastructure:
+          requires: [build_docker_image]
       # - gke_deploy_app:
       #     requires:
       #       - run_tests
