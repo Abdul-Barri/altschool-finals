@@ -20,13 +20,23 @@ terraform {
 
 # Terraform Cloud Eks Workspace
 
-terraform {
-  cloud {
-    organization = "Abdul-Barri"
+# terraform {
+#   cloud {
+#     organization = "Abdul-Barri"
 
-    workspaces {
-      name = "deployment"
-    }
+#     workspaces {
+#       name = "deployment"
+#     }
+#   }
+# }
+
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-08174509694"
+    key = "global/deployment/terraform.tfstate"
+    region     = "us-east-1"
+    dynamodb_table = "terraform-state-lock"
+    encrypt = true
   }
 }
 

@@ -37,7 +37,7 @@ resource "kubernetes_deployment" "kube-deployment-portfolio" {
       }
       spec {
         container {
-          image = "abdulbarri/portfolio:1.0"
+          image = var.docker-image
           name  = "portfolio"
         }
       }
