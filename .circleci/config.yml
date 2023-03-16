@@ -17,7 +17,7 @@ jobs:
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push $DOCKER_LOGIN/$IMAGE_NAME
 
-  create_infrastructure:
+  create_backend_state_store:
     docker:
       - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
     steps:
@@ -28,7 +28,7 @@ jobs:
             echo $TF_CLOUD_TOKEN > $HOME/.terraformrc
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/infrastructure/
+            cd terraform-files/backend/
             terraform init
             terraform plan
             terraform apply
@@ -37,7 +37,7 @@ workflows:
   deployment:
     jobs:
       - build_docker_image
-      - create_infrastructure
+      - create_backend_state_store
       # - gke_deploy_app:
       #     requires:
       #       - run_tests

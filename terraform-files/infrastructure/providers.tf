@@ -20,13 +20,23 @@ terraform {
 
 # Terraform Cloud Eks Workspace
 
-terraform {
-  cloud {
-    organization = "Abdul-Barri"
+# terraform {
+#   cloud {
+#     organization = "Abdul-Barri"
 
-    workspaces {
-      name = "infrastructure"
-    }
+#     workspaces {
+#       name = "infrastructure"
+#     }
+#   }
+# }
+
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-08174509694"
+    key = "global/s3/terraform.tfstate"
+    region     = "us-east-1"
+    dynamodb_table = "terraform-state-lock"
+    encrypt = true
   }
 }
 
@@ -54,8 +64,4 @@ provider "kubectl" {
     args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks-cluster.name]
     command     = "aws"
   }
-}
-
-provider "http" {
-  
 }
