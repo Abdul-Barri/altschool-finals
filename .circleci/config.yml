@@ -31,7 +31,7 @@ jobs:
             cd terraform-files/backend/
             terraform init
             terraform plan
-            terraform apply
+            terraform apply --auto-approve
 
 workflows:
   deployment:
