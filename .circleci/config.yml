@@ -23,9 +23,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create infrastructure on AWS
+          name: Create s3 backend to store state on AWS
           command: |
-            echo $TF_CLOUD_TOKEN > $HOME/.terraformrc
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/backend/
@@ -33,11 +32,26 @@ jobs:
             terraform plan
             terraform apply --auto-approve
 
+  create_infrastructure:
+    docker:
+      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+    steps:
+      - checkout
+      - run:
+          name: Create infrastructure on AWS
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/infrastructure/
+            terraform init
+            terraform plan
+            terraform apply --auto-approve
 workflows:
   deployment:
     jobs:
       - build_docker_image
       - create_backend_state_store
+      - create_infrastructure
       # - gke_deploy_app:
       #     requires:
       #       - run_tests
