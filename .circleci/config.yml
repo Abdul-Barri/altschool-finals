@@ -60,7 +60,7 @@ jobs:
             export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/deployments/
+            cd terraform-files/deployment/
             terraform init
             terraform plan -var $DOCKER_IMAGE -out=plan.txt
             terraform apply plan.txt --auto-approve
