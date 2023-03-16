@@ -1,13 +1,4 @@
 version: 2.1
-aliases:
-  - &install-aws-cli
-    run:
-      name: Installing AWS CLI
-      working_directory: /
-      command: |
-        sudo apt-get -y -qq update
-        sudo apt-get -y install awscli
-        sudo apt-get install -y python-pip python-dev build-essential
 jobs:
   build_docker_image:
     docker:
@@ -28,10 +19,9 @@ jobs:
 
   create_infrastructure:
     docker:
-      - image: cimg/base:2022.06
+      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
     steps:
       - checkout
-      # - *install-aws-cli
       - run:
           name: Create infrastructure on AWS
           command: |
