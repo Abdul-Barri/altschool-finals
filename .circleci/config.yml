@@ -167,7 +167,7 @@ jobs:
       #       terraform init
       #       terraform destroy --auto-approve
       - run:
-          name: Destroy the application deployment
+          name: Destroy the application deployments
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
