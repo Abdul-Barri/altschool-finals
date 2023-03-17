@@ -2,8 +2,6 @@
 
 provider "aws" {
   region     = "us-east-1"
-  # access_key = var.accesskey
-  # secret_key = var.secretkey
 
 }
 
@@ -17,18 +15,6 @@ terraform {
     }
   }
 }
-
-# Terraform Cloud Eks Workspace
-
-# terraform {
-#   cloud {
-#     organization = "Abdul-Barri"
-
-#     workspaces {
-#       name = "deployment"
-#     }
-#   }
-# }
 
 terraform {
   backend "s3" {

@@ -1,4 +1,7 @@
 version: 2.1
+orbs:
+  aws-eks: circleci/aws-eks@2.1.2
+  helm: circleci/helm@2.0.1
 jobs:
   build_docker_image:
     docker:
@@ -65,6 +68,7 @@ jobs:
             terraform init
             terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
             terraform apply plan.txt
+            exit 0
       - run:
           name: Rerun the deployment if it fails
           command: |
@@ -78,94 +82,35 @@ jobs:
             terraform init
             terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
             terraform apply plan.txt
-          when: on_fail
-      - run: my_cool_command || true
+  
+  configure_prometheus_with_helm:
+    docker:
+      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+    steps:
+      - checkout
+      - run:
+          name: install Prometheus 
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/monitoring/
+            terraform init
+            terraform plan
+            terraform apply --auto-approve
 
-  configure_ssl:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: Configure SSL certificates for subdomains
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/ssl/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
-  
-  configure_monitoring:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: Deploy prometheus
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/prometheus/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
-      # - run:
-      #     name: Deploy grafana
-      #     command: |
-      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      #       cd terraform-files/monitoring/grafana/
-      #       terraform init
-      #       terraform plan
-      #       terraform apply --auto-approve
-      # - run:
-      #     name: Deploy grafana dashboard
-      #     command: |
-      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      #       cd terraform-files/monitoring/grafana-dash/
-      #       terraform init
-      #       terraform plan
-      #       terraform apply --auto-approve
-  
   destroy_everything:
     docker:
       - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
     steps:
       - checkout
       - run:
-          name: Destroy grafana dashboard
+          name: Destroy Prometheus 
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/grafana-dash/
+            cd terraform-files/monitoring/
             terraform init
             terraform destroy --auto-approve
-      # - run:
-      #     name: Destroy grafana
-      #     command: |
-      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      #       cd terraform-files/monitoring/grafana/
-      #       terraform init
-      #       terraform destroy --auto-approve
-      # - run:
-      #     name: Destroy prometheus
-      #     command: |
-      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      #       cd terraform-files/monitoring/prometheus/
-      #       terraform init
-      #       terraform destroy --auto-approve
-      # - run:
-      #     name: Destroy ssl certificates
-      #     command: |
-      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      #       cd terraform-files/ssl/
-      #       terraform init
-      #       terraform destroy --auto-approve
       - run:
           name: Destroy the application deployments
           command: |
@@ -182,7 +127,8 @@ jobs:
             cd terraform-files/infrastructure/
             terraform init
             terraform destroy --auto-approve
-          
+
+        
 workflows:
   deployment:
     jobs:
@@ -196,9 +142,7 @@ workflows:
           requires: [build_docker_image]
       - deploy_applications:
           requires: [create_infrastructure]
-      - configure_ssl:
-          requires: [deploy_applications]
-      - configure_monitoring:
+      - configure_prometheus_with_helm:
           requires: [deploy_applications]
       - destroy_everything:
           requires: [deploy_applications]
