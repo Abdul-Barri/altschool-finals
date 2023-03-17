@@ -53,7 +53,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Deploy portfolio and socks shop applications to EKS cluster
+          name: Deploy portfolio and socks shop applications to EKS clusterr
           command: |
             export CLUSTER_NAME="eks-cluster"
             export TAG=0.2.<< pipeline.number >>
