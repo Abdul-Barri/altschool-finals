@@ -207,7 +207,7 @@ workflows:
       - configure_monitoring:
           requires: [deploy_applications]
       - destroy_everything:
-          requires: [deploy_applications, configure_ssl, configure_monitoring]
+          requires: [deploy_applications]
           filters:
             branches:
               only: [destroy]
