@@ -150,14 +150,14 @@ jobs:
       #       cd terraform-files/monitoring/grafana/
       #       terraform init
       #       terraform destroy --auto-approve
-      - run:
-          name: Destroy prometheus
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/prometheus/
-            terraform init
-            terraform destroy --auto-approve
+      # - run:
+      #     name: Destroy prometheus
+      #     command: |
+      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      #       cd terraform-files/monitoring/prometheus/
+      #       terraform init
+      #       terraform destroy --auto-approve
       - run:
           name: Destroy ssl certificates
           command: |
