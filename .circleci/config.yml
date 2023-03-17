@@ -64,7 +64,44 @@ jobs:
             terraform init
             terraform plan -var $DOCKER_IMAGE -out=plan.txt
             terraform apply plan.txt
-
+      - run:
+          name: Run on fail status
+          command: |
+            export CLUSTER_NAME="eks-cluster"
+            export TAG=0.2.<< pipeline.number >>
+            export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/deployment/
+            terraform init
+            terraform plan -var $DOCKER_IMAGE -out=plan.txt
+            terraform apply plan.txt
+          when: on_fail
+  
+  destroy_everything:
+    docker:
+      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+    steps:
+      - checkout
+      - run:
+          name: Destroy the application deployment
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/deployment/
+            terraform init
+            terraform plan
+            terraform destroy --auto-approve
+      - run:
+          name: Destroy the infrastructure on AWS
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/infrastructure/
+            terraform init
+            terraform plan
+            terraform destroy --auto-approve
+          
 workflows:
   deployment:
     jobs:
@@ -78,6 +115,11 @@ workflows:
           requires: [build_docker_image]
       - deploy_applications:
           requires: [create_infrastructure]
+      - destroy_everything:
+          requires: [deploy_applications]
+          filters:
+            branches:
+              only: [destroy]
       # - gke_deploy_app:
       #     requires:
       #       - run_tests
