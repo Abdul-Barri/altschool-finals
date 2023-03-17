@@ -141,7 +141,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/monitoring/grafana-dash/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
       - run:
           name: Destroy grafana
@@ -150,7 +149,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/monitoring/grafana/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
       - run:
           name: Destroy prometheus
@@ -159,7 +157,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/monitoring/prometheus/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
       - run:
           name: Destroy ssl certificates
@@ -168,7 +165,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/ssl/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
       - run:
           name: Destroy the application deployment
@@ -177,7 +173,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/deployment/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
       - run:
           name: Destroy the infrastructure on AWS
@@ -186,7 +181,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             cd terraform-files/infrastructure/
             terraform init
-            terraform plan
             terraform destroy --auto-approve
           
 workflows:
