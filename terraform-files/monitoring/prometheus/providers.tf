@@ -18,15 +18,25 @@ terraform {
   }
 }
 
-# Terraform Cloud Eks Workspace
+# # Terraform Cloud Eks Workspace
+
+# terraform {
+#   cloud {
+#     organization = "Abdul-Barri"
+
+#     workspaces {
+#       name = "configuration"
+#     }
+#   }
+# }
 
 terraform {
-  cloud {
-    organization = "Abdul-Barri"
-
-    workspaces {
-      name = "configuration"
-    }
+  backend "s3" {
+    bucket = "terraform-state-08174509694"
+    key = "global/monitoring-prom/terraform.tfstate"
+    region     = "us-east-1"
+    dynamodb_table = "terraform-state-lock"
+    encrypt = true
   }
 }
 

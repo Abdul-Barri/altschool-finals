@@ -17,3 +17,9 @@ variable "docker-image" {
   description = "name of the docker image to deploy"
   default     = "abdulbarri/portfolio:1.0"
 }
+
+variable "mysql-password" {
+  type        = string
+  description = "name of the docker image to deploy"
+  default     = "my_db_password"
+}

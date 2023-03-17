@@ -39,6 +39,14 @@ resource "kubernetes_deployment" "kube-deployment-portfolio" {
         container {
           image = var.docker-image
           name  = "portfolio"
+          env {
+            name  = "MYSQL_HOST"
+            value = "mysql"
+          }
+          env {
+            name  = "MYSQL_PORT"
+            value = "3306"
+          }
         }
       }
     }
@@ -57,10 +65,94 @@ resource "kubernetes_service" "kube-service-portfolio" {
       app = "portfolio"
     }
     port {
+      name = "metrics"
       port        = 80
       target_port = 80
     }
+    port {
+      name = "mysql"
+      port        = 3306
+      target_port = 3306
+    }
     type = "LoadBalancer"
+  }
+}
+
+# MYSQL database for portfolio app
+
+resource "kubernetes_deployment" "portfolio-db" {
+  metadata {
+    name = "mysql"
+    namespace = kubernetes_namespace.kube-namespace-portfolio.id
+    labels = {
+      app = "mysql"
+    }
+  }
+
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        app = "mysql"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "mysql"
+        }
+      }
+
+      spec {
+        container {
+          name = "mysql"
+          image = "mysql:latest"
+
+          env {
+            name = "MYSQL_ROOT_PASSWORD"
+            value = var.mysql-password
+          }
+
+          port {
+            name = "mysql"
+            container_port = 3306
+          }
+
+          volume_mount {
+            name = "mysql-persistent-storage"
+            mount_path = "/var/lib/mysql"
+          }
+        }
+
+        volume {
+          name = "mysql-persistent-storage"
+          empty_dir {
+            medium = "Memory"
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "porftolio-db-service" {
+  metadata {
+    name = "mysql"
+    namespace = kubernetes_namespace.kube-namespace-portfolio.id
+  }
+
+  spec {
+    selector = {
+      app = "mysql"
+    }
+
+    port {
+      name = "mysql"
+      port = 3306
+      target_port = 3306
+    }
+
+    type = "ClusterIP"
   }
 }
 
@@ -103,6 +195,7 @@ resource "kubernetes_service" "kube-service-socks" {
       name = "front-end"
     }
     port {
+      name = "metrics"
       port        = 80
       target_port = 8079
     }

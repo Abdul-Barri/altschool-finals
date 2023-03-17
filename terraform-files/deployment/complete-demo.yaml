@@ -62,7 +62,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: carts
@@ -192,7 +193,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: catalogue
@@ -358,7 +360,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: orders
@@ -485,7 +488,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: payment
@@ -537,7 +541,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: queue-master
@@ -727,7 +732,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: shipping
@@ -801,7 +807,8 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-  - port: 80
+  - name: metrics
+    port: 80
     targetPort: 80
   selector:
     name: user
