@@ -79,6 +79,7 @@ jobs:
             terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
             terraform apply plan.txt
           when: on_fail
+      - run: my_cool_command || true
 
   configure_ssl:
     docker:
