@@ -12,19 +12,24 @@ terraform {
       source = "gavinbunney/kubectl"
       version = "1.14.0"
     }
-  }
-}
-
-# ACME ssl certificate provider
-
-terraform {
-  required_providers {
     acme = {
       source  = "vancluever/acme"
       version = "~> 2.5.3"
     }
   }
 }
+
+# # ACME ssl certificate provider
+
+# terraform {
+#   required_providers {
+#     acme = {
+#       source  = "vancluever/acme"
+#       version = "~> 2.5.3"
+#     }
+    
+#   }
+# }
 
 terraform {
   backend "s3" {

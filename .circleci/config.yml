@@ -110,24 +110,24 @@ jobs:
             terraform init
             terraform plan
             terraform apply --auto-approve
-      - run:
-          name: Deploy grafana
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/grafana/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
-      - run:
-          name: Deploy grafana dashboard
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/grafana-dash/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
+      # - run:
+      #     name: Deploy grafana
+      #     command: |
+      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      #       cd terraform-files/monitoring/grafana/
+      #       terraform init
+      #       terraform plan
+      #       terraform apply --auto-approve
+      # - run:
+      #     name: Deploy grafana dashboard
+      #     command: |
+      #       aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      #       aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      #       cd terraform-files/monitoring/grafana-dash/
+      #       terraform init
+      #       terraform plan
+      #       terraform apply --auto-approve
   
   destroy_everything:
     docker:
