@@ -95,6 +95,16 @@ jobs:
             terraform init
             terraform plan
             terraform apply --auto-approve
+            exit 0
+      - run:
+          name: Rerun the deployment of prometheus and grafana if it fails
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            cd terraform-files/monitoring/
+            terraform init
+            terraform plan
+            terraform apply --auto-approve
   
   destroy_everything:
     docker:
