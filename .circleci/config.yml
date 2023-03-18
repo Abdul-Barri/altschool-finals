@@ -3,100 +3,100 @@ orbs:
   aws-eks: circleci/aws-eks@2.1.2
   helm: circleci/helm@2.0.1
 jobs:
-  build_docker_image:
-    docker:
-      - image: circleci/node:12
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - run:
-          name: Build Docker image
-          command: |
-            export TAG=0.2.<< pipeline.number >>
-            export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            
-            cd portfolio-webapp
-            docker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME
+  # build_docker_image:
+  #   docker:
+  #     - image: circleci/node:12
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker:
+  #         docker_layer_caching: false
+  #     - run:
+  #         name: Build Docker image
+  #         command: |
+  #           export TAG=0.2.<< pipeline.number >>
+  #           export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            
+  #           cd portfolio-webapp
+  #           docker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
+  #           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+  #           docker push $DOCKER_LOGIN/$IMAGE_NAME
 
-  create_backend_state_store:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: Create s3 backend to store state on AWS
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/backend/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
+  # create_backend_state_store:
+  #   docker:
+  #     - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Create s3 backend to store state on AWS
+  #         command: |
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           cd terraform-files/backend/
+  #           terraform init
+  #           terraform plan
+  #           terraform apply --auto-approve
 
-  create_infrastructure:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: Create infrastructure on AWS
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/infrastructure/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
+  # create_infrastructure:
+  #   docker:
+  #     - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Create infrastructure on AWS
+  #         command: |
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           cd terraform-files/infrastructure/
+  #           terraform init
+  #           terraform plan
+  #           terraform apply --auto-approve
 
-  deploy_applications:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: Deploy portfolio and socks shop applications to EKS clusterr
-          command: |
-            export CLUSTER_NAME="eks-cluster"
-            export TAG=0.2.<< pipeline.number >>
-            export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
-            export MYSQL_PSSWRD="mysql-password=${MYSQL_PASSWORD}"
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/deployment/
-            terraform init
-            terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
-            terraform apply plan.txt
-            exit 0
-      - run:
-          name: Rerun the deployment if it fails
-          command: |
-            export CLUSTER_NAME="eks-cluster"
-            export TAG=0.2.<< pipeline.number >>
-            export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
-            export MYSQL_PSSWRD="mysql-password=${MYSQL_PASSWORD}"
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/deployment/
-            terraform init
-            terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
-            terraform apply plan.txt
+  # deploy_applications:
+  #   docker:
+  #     - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Deploy portfolio and socks shop applications to EKS clusterr
+  #         command: |
+  #           export CLUSTER_NAME="eks-cluster"
+  #           export TAG=0.2.<< pipeline.number >>
+  #           export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
+  #           export MYSQL_PSSWRD="mysql-password=${MYSQL_PASSWORD}"
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           cd terraform-files/deployment/
+  #           terraform init
+  #           terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
+  #           terraform apply plan.txt
+  #           exit 0
+  #     - run:
+  #         name: Rerun the deployment if it fails
+  #         command: |
+  #           export CLUSTER_NAME="eks-cluster"
+  #           export TAG=0.2.<< pipeline.number >>
+  #           export DOCKER_IMAGE="docker-image=${DOCKER_LOGIN}/${CIRCLE_PROJECT_REPONAME}:$TAG"
+  #           export MYSQL_PSSWRD="mysql-password=${MYSQL_PASSWORD}"
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           cd terraform-files/deployment/
+  #           terraform init
+  #           terraform plan -var $DOCKER_IMAGE -var $MYSQL_PSSWRD -out=plan.txt
+  #           terraform apply plan.txt
   
-  configure_prometheus_with_helm:
-    docker:
-      - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
-    steps:
-      - checkout
-      - run:
-          name: install Prometheus 
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            cd terraform-files/monitoring/
-            terraform init
-            terraform plan
-            terraform apply --auto-approve
+  # configure_prometheus_with_helm:
+  #   docker:
+  #     - image: zenika/terraform-aws-cli:release-6.0_terraform-0.15.5_awscli-1.27.60
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: install Prometheus 
+  #         command: |
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           cd terraform-files/monitoring/
+  #           terraform init
+  #           terraform plan
+  #           terraform apply --auto-approve
 
   destroy_everything:
     docker:
@@ -132,20 +132,20 @@ jobs:
 workflows:
   deployment:
     jobs:
-      - build_docker_image
-      - create_backend_state_store:
-          requires: [build_docker_image]
-          filters:
-            branches:
-              only: [create-backend]
-      - create_infrastructure:
-          requires: [build_docker_image]
-      - deploy_applications:
-          requires: [create_infrastructure]
-      - configure_prometheus_with_helm:
-          requires: [deploy_applications]
+      # - build_docker_image
+      # - create_backend_state_store:
+      #     requires: [build_docker_image]
+      #     filters:
+      #       branches:
+      #         only: [create-backend]
+      # - create_infrastructure:
+      #     requires: [build_docker_image]
+      # - deploy_applications:
+      #     requires: [create_infrastructure]
+      # - configure_prometheus_with_helm:
+      #     requires: [deploy_applications]
       - destroy_everything:
-          requires: [deploy_applications]
+          # requires: [deploy_applications]
           filters:
             branches:
               only: [destroy]
