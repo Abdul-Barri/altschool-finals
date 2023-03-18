@@ -1,5 +1,5 @@
 data "kubectl_path_documents" "docs" {
-    pattern = "./manifests/*.yaml"
+    pattern = "./*.yaml"
 }
 
 resource "kubectl_manifest" "monitoring" {
