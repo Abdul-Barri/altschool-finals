@@ -1,20 +1,30 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace HelloWorldFunc
 {
-    public static class HelloWorld
+    // The class and method are no longer static for the isolated model
+    public class HelloWorld
     {
-        [FunctionName("HelloWorld")]
-        public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+        private readonly ILogger<HelloWorld> _logger;
+
+        public HelloWorld(ILogger<HelloWorld> logger)
         {
-            log.LogInformation("HelloWorld function processed a request.");
-            return new OkObjectResult("Hello, World! from Azure Functions 🚀");
+            _logger = logger;
+        }
+
+        [Function("HelloWorld")]
+        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+        {
+            _logger.LogInformation("HelloWorld function processed a request.");
+            
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+            response.WriteString("Hello, World! from Azure Functions 🚀");
+            
+            return response;
         }
     }
 }
