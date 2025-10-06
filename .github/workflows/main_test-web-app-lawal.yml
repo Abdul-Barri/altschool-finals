@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: file
-          path: './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -58,6 +58,7 @@ jobs:
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
 
           
+
 
 
 
