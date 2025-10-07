@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './HelloWorldFunc' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './dotnet-app' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
 
 jobs:
@@ -42,10 +42,10 @@ jobs:
           zip -r ../functionapp.zip *
 
 
-      # - name: Upload a Build Artifact
-      #   uses: actions/upload-artifact@v4.6.2
-      #   with:
-      #     path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -54,13 +54,13 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DCAFCA399AD4F8AAA60ED64BE8D3AFD }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2AA20DAC988C43988E95473C039E4F17 }}
 
-      # - name: 'Run Azure Functions Action'
-      #   uses: Azure/functions-action@v1
-      #   id: fa
-      #   with:
-      #     app-name: 'test-web-app-lawal'
-      #     slot-name: 'Production'
-      #     package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: 'test-web-app-lawal'
+          slot-name: 'Production'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
 
       - name: 'Deploy to Azure FunctionApp'
         uses: azure/CLI@v1
