@@ -39,7 +39,7 @@ jobs:
       - name: 'Package for Azure Functions'
         run: |
           cd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          zip -r ../../functionapp.zip *
+          zip -r ../functionapp.zip *
 
 
       - name: Upload a Build Artifact
@@ -70,6 +70,7 @@ jobs:
               --resource-group test \
               --name test-web-app-lawal \
               --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip'
+
 
 
 
