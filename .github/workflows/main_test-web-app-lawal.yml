@@ -70,8 +70,7 @@ jobs:
               --resource-group test \
               --name test-web-app-lawal \
               --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip' \
-              --build-remote true \
-              --settings FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+              --build-remote true 
 
 
 
