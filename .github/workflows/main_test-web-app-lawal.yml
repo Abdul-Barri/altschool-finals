@@ -60,17 +60,24 @@ jobs:
       #   with:
       #     app-name: 'test-web-app-lawal'
       #     slot-name: 'Production'
-      #     package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+      #     package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output' az webapp deployment source config-zip -g $resourceGroupName -n $functionName --src $sourceZipPath
+
+      # - name: 'Deploy to Azure FunctionApp'
+      #   uses: azure/CLI@v1
+      #   with:
+      #     inlineScript: |
+      #       az functionapp deployment source config-zip \
+      #         --resource-group test \
+      #         --name test-web-app-lawal \
+      #         --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip' \
+      #         --build-remote true 
 
       - name: 'Deploy to Azure FunctionApp'
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az functionapp deployment source config-zip \
-              --resource-group test \
-              --name test-web-app-lawal \
-              --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip' \
-              --build-remote true 
+            az webapp deployment source config-zip -g test -n test-web-app-lawal --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip'
+
 
 
 
