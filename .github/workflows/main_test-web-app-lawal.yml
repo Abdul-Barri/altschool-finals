@@ -42,10 +42,10 @@ jobs:
           zip -r ../functionapp.zip *
 
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+      # - name: Upload a Build Artifact
+      #   uses: actions/upload-artifact@v4.6.2
+      #   with:
+      #     path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -70,7 +70,9 @@ jobs:
               --resource-group test \
               --name test-web-app-lawal \
               --src '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/functionapp.zip' \
-              --build-remote true
+              --build-remote true \
+              --settings FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+
 
 
 
